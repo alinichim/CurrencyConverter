@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exchange Rates</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bootstrap-5.3.1-dist/css/bootstrap.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="mb-4">Currency Exchange Rates Converter</h1>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="fromCurrency" class="form-label">From Currency</label>
+            <select class="form-select" id="fromCurrency">
+              {% for currency in rates.keys() %}
+              <option value="{{ currency }}">{{ currency }}</option>
+              {% endfor %}
+              <!-- Add more currency options as needed -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <input
+              type="number"
+              class="form-control"
+              id="amount"
+              placeholder="Enter amount"
+            />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="toCurrency" class="form-label">To Currency</label>
+            <select class="form-select" id="toCurrency">
+              {% for currency in rates.keys() %}
+              <option value="{{ currency }}">{{ currency }}</option>
+              {% endfor %}
+              <!-- Add more currency options as needed -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="convertedAmount" class="form-label"
+              >Converted Amount</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="convertedAmount"
+              readonly
+            />
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="convertBtn">Convert</button>
+    </div>
+    <script src="{{ url_for('static', filename='bootstrap-5.3.1-dist/js/bootstrap.bundle.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#convertBtn").click(function () {
+          const fromCurrency = $("#fromCurrency").val();
+          const toCurrency = $("#toCurrency").val();
+          const amount = parseFloat($("#amount").val());
+
+          // Send AJAX request to the server
+          $.ajax({
+            type: "GET", // You can change this to 'POST' if needed
+            url: "/convert?", // Replace with your server's endpoint URL
+            data: {
+              fromCurrency: fromCurrency,
+              toCurrency: toCurrency,
+              amount: amount,
+            },
+            success: function (response) {
+              // Update the converted amount field with the response from the server
+              $("#convertedAmount").val(response.result.toFixed(2));
+            },
+            error: function (error) {
+              console.error("Error:", error);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
